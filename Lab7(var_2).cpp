@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <limits>
 
 using namespace std;
 
@@ -60,10 +59,8 @@ double solveEquation2(double a, double b) {
         }
     }
     
-    // Проверка на переполнение
-    if ((b == numeric_limits<double>::lowest() && a == -1) || 
-        (b == numeric_limits<double>::max() && a == -1)) {
-        throw MyMathException("Переполнение при вычислении", a, b);  // Наследник
+    if (a == -1 && b > 1e100) {  // Примерная проверка больших чисел
+        throw MyMathException("Возможное переполнение", a, b);
     }
     
     return -b / a;

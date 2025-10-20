@@ -1,196 +1,146 @@
 #include <iostream>
 #include <stdexcept>
+#include <string>
+#include <limits>
+
 using namespace std;
 
-// Базовый класс Array
-class Array {
-protected:
-    static const int MAX_SIZE = 256;
-    unsigned char* data;
-    int size;
+// 1. Собственные исключения
 
+// 1.1 Пустой класс
+class EmptyException {};
+
+// 1.2 Независимый класс с полями
+class CustomException {
+private:
+    string message;
+    double a_val, b_val;
 public:
-    Array() : data(nullptr), size(0) {}
+    CustomException(const string& msg, double a, double b) 
+        : message(msg), a_val(a), b_val(b) {}
     
-    Array(int n, unsigned char value = 0) : size(n) {
-        if (n < 0 || n > MAX_SIZE) throw invalid_argument("Неверный размер");
-        data = new unsigned char[size];
-        for (int i = 0; i < size; i++) data[i] = value;
-    }
-    
-    // Конструктор копирования
-    Array(const Array& other) : size(other.size) {
-        data = new unsigned char[size];
-        for (int i = 0; i < size; i++) data[i] = other.data[i];
-    }
-    
-    virtual ~Array() { delete[] data; }
-    
-    int getSize() const { return size; }
-    
-    // Оператор индексирования с проверкой границ
-    unsigned char& operator[](int index) {
-        if (index < 0 || index >= size) throw out_of_range("Индекс за границами");
-        return data[index];
-    }
-    
-    // Виртуальный метод сложения массивов
-    virtual Array* add(const Array& other) const {
-        int newSize = (size > other.size) ? size : other.size;
-        Array* result = new Array(newSize);
-        for (int i = 0; i < newSize; i++) {
-            unsigned char val1 = (i < size) ? data[i] : 0;
-            unsigned char val2 = (i < other.size) ? other.data[i] : 0;
-            (*result)[i] = val1 + val2;
-        }
-        return result;
-    }
-    
-    virtual void print(ostream& os) const {
-        os << "[";
-        for (int i = 0; i < size; i++) {
-            os << (int)data[i];
-            if (i < size - 1) os << ", ";
-        }
-        os << "]";
-    }
+    string getMessage() const { return message; }
+    double getA() const { return a_val; }
+    double getB() const { return b_val; }
 };
 
-// Перегрузка оператора вывода для Array
-ostream& operator<<(ostream& os, const Array& arr) {
-    arr.print(os);
-    return os;
+// 1.3 Наследник от стандартного исключения
+class MyMathException : public runtime_error {
+private:
+    double a_val, b_val;
+public:
+    MyMathException(const string& msg, double a, double b) 
+        : runtime_error(msg), a_val(a), b_val(b) {}
+    
+    double getA() const { return a_val; }
+    double getB() const { return b_val; }
+};
+
+// 2. Реализации функции решения уравнения
+
+// 2.1 Без спецификации исключений
+double solveEquation1(double a, double b) {
+    if (a == 0) {
+        if (b == 0) {
+            throw invalid_argument("Уравнение 0x + 0 = 0 имеет бесконечное количество решений");
+        } else {
+            throw invalid_argument("Уравнение 0x + " + to_string(b) + " = 0 не имеет решений");
+        }
+    }
+    return -b / a;
 }
 
-// Класс Fraction для работы с дробными числами
-class Fraction : public Array {
-private:
-    int digits;  // количество цифр в дробной части
-    bool sign;   // знак числа
-
-public:
-    Fraction() : Array(), digits(2), sign(true) {}
-    
-    Fraction(int places, bool positive = true, unsigned char value = 0) 
-        : Array(places, value), digits(places), sign(positive) {}
-    
-    // Переопределение виртуального метода сложения для дробей
-    virtual Array* add(const Array& other) const override {
-        // Проверка типа с помощью dynamic_cast
-        const Fraction* otherFraction = dynamic_cast<const Fraction*>(&other);
-        if (!otherFraction) throw invalid_argument("Только дроби с дробями");
-        
-        // Используем максимальное количество цифр
-        int maxDigits = (digits > otherFraction->digits) ? digits : otherFraction->digits;
-        Fraction* result = new Fraction(maxDigits);
-        
-        // Поэлементное сложение цифр
-        for (int i = 0; i < maxDigits; i++) {
-            unsigned char val1 = (i < size) ? data[i] : 0;
-            unsigned char val2 = (i < otherFraction->size) ? otherFraction->data[i] : 0;
-            (*result)[i] = val1 + val2;
+// 2.2 С собственными исключениями
+double solveEquation2(double a, double b) {
+    if (a == 0) {
+        if (b == 0) {
+            throw EmptyException();  // Пустой класс
+        } else {
+            throw CustomException("Уравнение не имеет решений", a, b);  // Независимый класс
         }
-        
-        result->sign = (sign == otherFraction->sign) ? sign : true;
-        return result;
     }
     
-    virtual void print(ostream& os) const override {
-        os << (sign ? "+" : "-") << "0.";
-        for (int i = 0; i < size; i++) os << (int)data[i];
+    // Проверка на переполнение
+    if ((b == numeric_limits<double>::lowest() && a == -1) || 
+        (b == numeric_limits<double>::max() && a == -1)) {
+        throw MyMathException("Переполнение при вычислении", a, b);  // Наследник
     }
-};
+    
+    return -b / a;
+}
 
-// Класс BitString для работы с битовыми строками
-class BitString : public Array {
-public:
-    BitString() : Array() {}
-    
-    BitString(int bits, unsigned char value = 0) : Array(bits, value) {
-        // Гарантируем что значения только 0 или 1
-        for (int i = 0; i < size; i++) data[i] = (data[i] != 0) ? 1 : 0;
-    }
-    
-    // Переопределение виртуального метода сложения для битовых строк
-    virtual Array* add(const Array& other) const override {
-        const BitString* otherBitString = dynamic_cast<const BitString*>(&other);
-        if (!otherBitString) throw invalid_argument("Только биты с битами");
-
-        int maxBits = (size > otherBitString->size) ? size : otherBitString->size;
-        BitString* result = new BitString(maxBits);
-        
-        // Побитовое ИЛИ
-        for (int i = 0; i < maxBits; i++) {
-            bool bit1 = (i < size) ? (data[i] != 0) : false;
-            bool bit2 = (i < otherBitString->size) ? (otherBitString->data[i] != 0) : false;
-            (*result)[i] = (bit1 || bit2) ? 1 : 0;
-        }
-        
-        return result;
-    }
-    
-    virtual void print(ostream& os) const override {
-        os << "b\"";
-        // Выводим биты от старшего к младшему
-        for (int i = size - 1; i >= 0; i--) os << (data[i] ? '1' : '0');
-        os << "\"";
-    }
-};
-
-// Главная функция
+// 3. Главная функция с обработкой исключений
 int main() {
-    cout << "Лабораторная №2: Виртуальные методы\n" << endl;
-
-    // Создаем объекты разных типов
-    Array arr(3, 5);
-    Fraction frac1(3, true, 1);  // +0.111
-    Fraction frac2(2, true, 2);  // +0.22
-    BitString bits1(4, 1);       // 1111
-    BitString bits2(3, 1);       // 111
-
-    cout << "Объекты созданы:" << endl;
-    cout << "Массив: " << arr << endl;
-    cout << "Дробь 1: " << frac1 << endl;
-    cout << "Дробь 2: " << frac2 << endl;
-    cout << "Биты 1: " << bits1 << endl;
-    cout << "Биты 2: " << bits2 << endl;
-
-    // Демонстрация сложения через виртуальные методы
-    cout << "\nСложение:" << endl;
-    Array* sum1 = frac1.add(frac2);
-    cout << "Дроби: " << frac1 << " + " << frac2 << " = " << *sum1 << endl;
-    delete sum1;
-
-    Array* sum2 = bits1.add(bits2);
-    cout << "Биты: " << bits1 << " + " << bits2 << " = " << *sum2 << endl;
-    delete sum2;
-
-    // Демонстрация работы оператора []
-    cout << "\nОператор []:" << endl;
-    cout << "frac1[0] = " << (int)frac1[0] << endl;
-    frac1[0] = 9;
-    cout << "После frac1[0] = 9: " << frac1 << endl;
-
-    // Демонстрация полиморфизма через указатели базового класса
-    cout << "\nПолиморфизм:" << endl;
-    Array* objects[] = { &frac1, &bits1 };
-    cout << "Через Array*: " << *objects[0] << endl;
-    cout << "Через Array*: " << *objects[1] << endl;
-
-    // Обработка ошибок
-    cout << "\nОбработка ошибок:" << endl;
-    try {
-        frac1[10] = 5;  // выход за границы массива
-    } catch (const out_of_range& e) {
-        cout << "Ошибка: " << e.what() << endl;
+    cout << "Лабораторная работа №1: Исключения" << endl;
+    cout << "Решение уравнения ax + b = 0" << endl << endl;
+    
+    // Тестовые случаи
+    double test_cases[][2] = {
+        {2, 4},     // нормальный случай: 2x + 4 = 0 -> x = -2
+        {0, 5},     // нет решений: 0x + 5 = 0
+        {0, 0},     // бесконечно решений: 0x + 0 = 0
+        {-1, 10},   // нормальный случай: -x + 10 = 0 -> x = 10
+        {3, 0}      // нормальный случай: 3x + 0 = 0 -> x = 0
+    };
+    
+    const char* descriptions[] = {
+        "2x + 4 = 0",
+        "0x + 5 = 0", 
+        "0x + 0 = 0",
+        "-x + 10 = 0",
+        "3x + 0 = 0"
+    };
+    
+    // Демонстрация всех вариантов
+    for (int variant = 1; variant <= 2; variant++) {
+        cout << "=== Вариант " << variant << " ===" << endl;
+        
+        for (int i = 0; i < 5; i++) {
+            double a = test_cases[i][0];
+            double b = test_cases[i][1];
+            
+            cout << "Уравнение: " << descriptions[i] << " -> ";
+            
+            try {
+                double result;
+                
+                if (variant == 1) {
+                    result = solveEquation1(a, b);
+                    cout << "x = " << result;
+                } else {
+                    result = solveEquation2(a, b);
+                    cout << "x = " << result;
+                }
+                
+            } 
+            // Обработка стандартных исключений
+            catch (const invalid_argument& e) {
+                cout << "Ошибка (invalid_argument): " << e.what();
+            }
+            catch (const runtime_error& e) {
+                cout << "Ошибка (runtime_error): " << e.what();
+            }
+            // Обработка собственных исключений
+            catch (const EmptyException&) {
+                cout << "Ошибка (EmptyException): Уравнение имеет бесконечное количество решений";
+            }
+            catch (const CustomException& e) {
+                cout << "Ошибка (CustomException): " << e.getMessage() 
+                     << " (a=" << e.getA() << ", b=" << e.getB() << ")";
+            }
+            catch (const MyMathException& e) {
+                cout << "Ошибка (MyMathException): " << e.what()
+                     << " (a=" << e.getA() << ", b=" << e.getB() << ")";
+            }
+            // Общий обработчик
+            catch (...) {
+                cout << "Неизвестная ошибка";
+            }
+            
+            cout << endl;
+        }
+        cout << endl;
     }
-
-    try {
-        frac1.add(bits1);  // попытка сложить разные типы
-    } catch (const invalid_argument& e) {
-        cout << "Ошибка: " << e.what() << endl;
-    }
-
-    cout << "\nПрограмма завершена!" << endl;
+    
     return 0;
 }

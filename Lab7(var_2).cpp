@@ -18,6 +18,7 @@ public:
         for (int i = 0; i < size; i++) data[i] = value;
     }
     
+    // Конструктор копирования
     Array(const Array& other) : size(other.size) {
         data = new unsigned char[size];
         for (int i = 0; i < size; i++) data[i] = other.data[i];
@@ -27,11 +28,13 @@ public:
     
     int getSize() const { return size; }
     
+    // Оператор индексирования с проверкой границ
     unsigned char& operator[](int index) {
         if (index < 0 || index >= size) throw out_of_range("Индекс за границами");
         return data[index];
     }
     
+    // Виртуальный метод сложения массивов
     virtual Array* add(const Array& other) const {
         int newSize = (size > other.size) ? size : other.size;
         Array* result = new Array(newSize);
@@ -53,16 +56,17 @@ public:
     }
 };
 
+// Перегрузка оператора вывода для Array
 ostream& operator<<(ostream& os, const Array& arr) {
     arr.print(os);
     return os;
 }
 
-// Класс Fraction
+// Класс Fraction для работы с дробными числами
 class Fraction : public Array {
 private:
-    int digits;  // было decimalPlaces
-    bool sign;
+    int digits;  // количество цифр в дробной части
+    bool sign;   // знак числа
 
 public:
     Fraction() : Array(), digits(2), sign(true) {}
@@ -70,14 +74,17 @@ public:
     Fraction(int places, bool positive = true, unsigned char value = 0) 
         : Array(places, value), digits(places), sign(positive) {}
     
+    // Переопределение виртуального метода сложения для дробей
     virtual Array* add(const Array& other) const override {
+        // Проверка типа с помощью dynamic_cast
         const Fraction* otherFraction = dynamic_cast<const Fraction*>(&other);
         if (!otherFraction) throw invalid_argument("Только дроби с дробями");
         
-        int maxDigits = (digits > otherFraction->digits) ? 
-                       digits : otherFraction->digits;
+        // Используем максимальное количество цифр
+        int maxDigits = (digits > otherFraction->digits) ? digits : otherFraction->digits;
         Fraction* result = new Fraction(maxDigits);
         
+        // Поэлементное сложение цифр
         for (int i = 0; i < maxDigits; i++) {
             unsigned char val1 = (i < size) ? data[i] : 0;
             unsigned char val2 = (i < otherFraction->size) ? otherFraction->data[i] : 0;
@@ -94,15 +101,17 @@ public:
     }
 };
 
-// Класс BitString
+// Класс BitString для работы с битовыми строками
 class BitString : public Array {
 public:
     BitString() : Array() {}
     
     BitString(int bits, unsigned char value = 0) : Array(bits, value) {
+        // Гарантируем что значения только 0 или 1
         for (int i = 0; i < size; i++) data[i] = (data[i] != 0) ? 1 : 0;
     }
     
+    // Переопределение виртуального метода сложения для битовых строк
     virtual Array* add(const Array& other) const override {
         const BitString* otherBitString = dynamic_cast<const BitString*>(&other);
         if (!otherBitString) throw invalid_argument("Только биты с битами");
@@ -110,6 +119,7 @@ public:
         int maxBits = (size > otherBitString->size) ? size : otherBitString->size;
         BitString* result = new BitString(maxBits);
         
+        // Побитовое ИЛИ
         for (int i = 0; i < maxBits; i++) {
             bool bit1 = (i < size) ? (data[i] != 0) : false;
             bool bit2 = (i < otherBitString->size) ? (otherBitString->data[i] != 0) : false;
@@ -121,6 +131,7 @@ public:
     
     virtual void print(ostream& os) const override {
         os << "b\"";
+        // Выводим биты от старшего к младшему
         for (int i = size - 1; i >= 0; i--) os << (data[i] ? '1' : '0');
         os << "\"";
     }
@@ -130,7 +141,7 @@ public:
 int main() {
     cout << "Лабораторная №2: Виртуальные методы\n" << endl;
 
-    // Создаем объекты
+    // Создаем объекты разных типов
     Array arr(3, 5);
     Fraction frac1(3, true, 1);  // +0.111
     Fraction frac2(2, true, 2);  // +0.22
@@ -144,7 +155,7 @@ int main() {
     cout << "Биты 1: " << bits1 << endl;
     cout << "Биты 2: " << bits2 << endl;
 
-    // Демонстрация сложения
+    // Демонстрация сложения через виртуальные методы
     cout << "\nСложение:" << endl;
     Array* sum1 = frac1.add(frac2);
     cout << "Дроби: " << frac1 << " + " << frac2 << " = " << *sum1 << endl;
@@ -154,13 +165,13 @@ int main() {
     cout << "Биты: " << bits1 << " + " << bits2 << " = " << *sum2 << endl;
     delete sum2;
 
-    // Демонстрация оператора []
+    // Демонстрация работы оператора []
     cout << "\nОператор []:" << endl;
     cout << "frac1[0] = " << (int)frac1[0] << endl;
     frac1[0] = 9;
     cout << "После frac1[0] = 9: " << frac1 << endl;
 
-    // Демонстрация полиморфизма
+    // Демонстрация полиморфизма через указатели базового класса
     cout << "\nПолиморфизм:" << endl;
     Array* objects[] = { &frac1, &bits1 };
     cout << "Через Array*: " << *objects[0] << endl;
@@ -169,13 +180,13 @@ int main() {
     // Обработка ошибок
     cout << "\nОбработка ошибок:" << endl;
     try {
-        frac1[10] = 5;
+        frac1[10] = 5;  // выход за границы массива
     } catch (const out_of_range& e) {
         cout << "Ошибка: " << e.what() << endl;
     }
 
     try {
-        frac1.add(bits1);
+        frac1.add(bits1);  // попытка сложить разные типы
     } catch (const invalid_argument& e) {
         cout << "Ошибка: " << e.what() << endl;
     }

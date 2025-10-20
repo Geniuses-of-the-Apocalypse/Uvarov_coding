@@ -66,13 +66,13 @@ public:
 // ===== Класс-наследник Fraction =====
 class Fraction : public Pair {
 private:
-    int integerPart;
-    double fractionalPart;
+    int iPart;
+    double fPart;
 public:
     // Конструктор без параметров
     Fraction() : Pair() {
-        integerPart = 0;
-        fractionalPart = 0.0;
+        iPart = 0;
+        fPart = 0.0;
     }
     // Конструктор с параметрами
     Fraction(int i, double f) : Pair(i, f) {
@@ -80,51 +80,51 @@ public:
             cout << "Ошибка: значения не могут быть отрицательными!" << endl;
             exit(1);
         }
-        integerPart = i;
-        fractionalPart = f;
+        iPart = i;
+        fPart = f;
     }
     // Методы установки
-    void setIntegerPart(int i) {
+    void setIPart(int i) {
         if (i < 0) {
             cout << "Ошибка: недопустимое значение integerPart!" << endl;
             exit(1);
         }
-        integerPart = i;
+        iPart = i;
     }
-    void setFractionalPart(double f) {
+    void setFPart(double f) {
         if (f < 0) {
             cout << "Ошибка: недопустимое значение fractionalPart!" << endl;
             exit(1);
         }
-        fractionalPart = f;
+        fPart = f;
     }
     // Методы получения
-    int getIntegerPart() { return integerPart; }
-    double getFractionalPart() { return fractionalPart; }
+    int getIPart() { return iPart; }
+    double getFPart() { return fPart; }
     // Полный набор сравнений
     bool operator>(Fraction &f) {
-        if (integerPart > f.integerPart)
+        if (iPart > f.iPart)
             return true;
-        if (integerPart == f.integerPart && fractionalPart > f.fractionalPart)
+        if (iPart == f.iPart && fPart > f.fPart)
             return true;
         return false;
     }
     bool operator<(Fraction &f) {
-        if (integerPart < f.integerPart)
+        if (iPart < f.iPart)
             return true;
-        if (integerPart == f.integerPart && fractionalPart < f.fractionalPart)
+        if (iPart == f.iPart && fPart < f.fPart)
             return true;
         return false;
     }
     bool operator==(Fraction &f) {
-        return integerPart == f.integerPart && fractionalPart == f.fractionalPart;
+        return iPart == f.iPart && fPart == f.fPart;
     }
     bool operator!=(Fraction &f) {
         return !(*this == f);
     }
     // Преобразование в строку
     string toString() {
-        return "[" + to_string(integerPart) + " + " + to_string(fractionalPart) + "]";
+        return "[" + to_string(iPart) + " + " + to_string(fPart) + "]";
     }
     // Вывод
     void print() {

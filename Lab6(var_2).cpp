@@ -13,15 +13,24 @@ public:
     Array() : data(nullptr), size(0) {}
     
     Array(int n, unsigned char value = 0) : size(n) {
-        if (n < 0 || n > MAX_SIZE) throw invalid_argument("Неверный размер");
+        if (n < 0) {
+            throw invalid_argument("Неверный размер");
+        }
+        if (n > MAX_SIZE) {
+            throw invalid_argument("Неверный размер");
+        }
         data = new unsigned char[size];
-        for (int i = 0; i < size; i++) data[i] = value;
+        for (int i = 0; i < size; i++) {
+            data[i] = value;
+        }
     }
     
     // Конструктор копирования
     Array(const Array& other) : size(other.size) {
         data = new unsigned char[size];
-        for (int i = 0; i < size; i++) data[i] = other.data[i];
+        for (int i = 0; i < size; i++) {
+            data[i] = other.data[i];
+        }
     }
     
     virtual ~Array() { delete[] data; }
@@ -30,17 +39,40 @@ public:
     
     // Оператор индексирования с проверкой границ
     unsigned char& operator[](int index) {
-        if (index < 0 || index >= size) throw out_of_range("Индекс за границами");
+        if (index < 0) {
+            throw out_of_range("Индекс за границами");
+        }
+        if (index >= size) {
+            throw out_of_range("Индекс за границами");
+        }
         return data[index];
     }
     
     // Виртуальный метод сложения массивов
     virtual Array* add(const Array& other) const {
-        int newSize = (size > other.size) ? size : other.size;
+        int newSize;
+        if (size > other.size) {
+            newSize = size;
+        } else {
+            newSize = other.size;
+        }
+        
         Array* result = new Array(newSize);
         for (int i = 0; i < newSize; i++) {
-            unsigned char val1 = (i < size) ? data[i] : 0;
-            unsigned char val2 = (i < other.size) ? other.data[i] : 0;
+            unsigned char val1;
+            if (i < size) {
+                val1 = data[i];
+            } else {
+                val1 = 0;
+            }
+            
+            unsigned char val2;
+            if (i < other.size) {
+                val2 = other.data[i];
+            } else {
+                val2 = 0;
+            }
+            
             (*result)[i] = val1 + val2;
         }
         return result;
@@ -50,7 +82,9 @@ public:
         os << "[";
         for (int i = 0; i < size; i++) {
             os << (int)data[i];
-            if (i < size - 1) os << ", ";
+            if (i < size - 1) {
+                os << ", ";
+            }
         }
         os << "]";
     }
@@ -78,26 +112,57 @@ public:
     virtual Array* add(const Array& other) const override {
         // Проверка типа с помощью dynamic_cast
         const Fraction* otherFraction = dynamic_cast<const Fraction*>(&other);
-        if (!otherFraction) throw invalid_argument("Только дроби с дробями");
+        if (!otherFraction) {
+            throw invalid_argument("Только дроби с дробями");
+        }
         
         // Используем максимальное количество цифр
-        int maxDigits = (digits > otherFraction->digits) ? digits : otherFraction->digits;
+        int maxDigits;
+        if (digits > otherFraction->digits) {
+            maxDigits = digits;
+        } else {
+            maxDigits = otherFraction->digits;
+        }
+        
         Fraction* result = new Fraction(maxDigits);
         
         // Поэлементное сложение цифр
         for (int i = 0; i < maxDigits; i++) {
-            unsigned char val1 = (i < size) ? data[i] : 0;
-            unsigned char val2 = (i < otherFraction->size) ? otherFraction->data[i] : 0;
+            unsigned char val1;
+            if (i < size) {
+                val1 = data[i];
+            } else {
+                val1 = 0;
+            }
+            
+            unsigned char val2;
+            if (i < otherFraction->size) {
+                val2 = otherFraction->data[i];
+            } else {
+                val2 = 0;
+            }
+            
             (*result)[i] = val1 + val2;
         }
         
-        result->sign = (sign == otherFraction->sign) ? sign : true;
+        if (sign == otherFraction->sign) {
+            result->sign = sign;
+        } else {
+            result->sign = true;
+        }
         return result;
     }
     
     virtual void print(ostream& os) const override {
-        os << (sign ? "+" : "-") << "0.";
-        for (int i = 0; i < size; i++) os << (int)data[i];
+        if (sign) {
+            os << "+";
+        } else {
+            os << "-";
+        }
+        os << "0.";
+        for (int i = 0; i < size; i++) {
+            os << (int)data[i];
+        }
     }
 };
 
@@ -108,22 +173,52 @@ public:
     
     BitString(int bits, unsigned char value = 0) : Array(bits, value) {
         // Гарантируем что значения только 0 или 1
-        for (int i = 0; i < size; i++) data[i] = (data[i] != 0) ? 1 : 0;
+        for (int i = 0; i < size; i++) {
+            if (data[i] != 0) {
+                data[i] = 1;
+            } else {
+                data[i] = 0;
+            }
+        }
     }
     
     // Переопределение виртуального метода сложения для битовых строк
     virtual Array* add(const Array& other) const override {
         const BitString* otherBitString = dynamic_cast<const BitString*>(&other);
-        if (!otherBitString) throw invalid_argument("Только биты с битами");
+        if (!otherBitString) {
+            throw invalid_argument("Только биты с битами");
+        }
 
-        int maxBits = (size > otherBitString->size) ? size : otherBitString->size;
+        int maxBits;
+        if (size > otherBitString->size) {
+            maxBits = size;
+        } else {
+            maxBits = otherBitString->size;
+        }
+        
         BitString* result = new BitString(maxBits);
         
         // Побитовое ИЛИ
         for (int i = 0; i < maxBits; i++) {
-            bool bit1 = (i < size) ? (data[i] != 0) : false;
-            bool bit2 = (i < otherBitString->size) ? (otherBitString->data[i] != 0) : false;
-            (*result)[i] = (bit1 || bit2) ? 1 : 0;
+            bool bit1;
+            if (i < size) {
+                bit1 = (data[i] != 0);
+            } else {
+                bit1 = false;
+            }
+            
+            bool bit2;
+            if (i < otherBitString->size) {
+                bit2 = (otherBitString->data[i] != 0);
+            } else {
+                bit2 = false;
+            }
+            
+            if (bit1 || bit2) {
+                (*result)[i] = 1;
+            } else {
+                (*result)[i] = 0;
+            }
         }
         
         return result;
@@ -132,7 +227,13 @@ public:
     virtual void print(ostream& os) const override {
         os << "b\"";
         // Выводим биты от старшего к младшему
-        for (int i = size - 1; i >= 0; i--) os << (data[i] ? '1' : '0');
+        for (int i = size - 1; i >= 0; i--) {
+            if (data[i]) {
+                os << '1';
+            } else {
+                os << '0';
+            }
+        }
         os << "\"";
     }
 };

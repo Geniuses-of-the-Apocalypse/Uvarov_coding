@@ -152,10 +152,38 @@ int main() {
     
     // Демонстрация сравнения
     cout << "\n=== Сравнение объектов ===" << endl;
-    cout << "p1 > p2: " << (p1 > p2 ? "true" : "false") << endl;
-    cout << "p1 < p2: " << (p1 < p2 ? "true" : "false") << endl;
-    cout << "f1 > f2: " << (f1 > f2 ? "true" : "false") << endl;
-    cout << "f1 < f2: " << (f1 < f2 ? "true" : "false") << endl;
+    bool result1 = p1 > p2;
+    bool result2 = p1 < p2;
+    bool result3 = f1 > f2;
+    bool result4 = f1 < f2;
+    
+    cout << "p1 > p2: ";
+    if (result1) {
+        cout << "true" << endl;
+    } else {
+        cout << "false" << endl;
+    }
+    
+    cout << "p1 < p2: ";
+    if (result2) {
+        cout << "true" << endl;
+    } else {
+        cout << "false" << endl;
+    }
+    
+    cout << "f1 > f2: ";
+    if (result3) {
+        cout << "true" << endl;
+    } else {
+        cout << "false" << endl;
+    }
+    
+    cout << "f1 < f2: ";
+    if (result4) {
+        cout << "true" << endl;
+    } else {
+        cout << "false" << endl;
+    }
     
     // Демонстрация принципа подстановки
     cout << "\n=== Принцип подстановки ===" << endl;

@@ -241,7 +241,8 @@ public:
 // Главная функция
 int main() {
     cout << "Лабораторная №2: Виртуальные методы\n" << endl;
-
+    setlocale(LC_ALL, "RU");
+    
     // Создаем объекты разных типов
     Array arr(3, 5);
     Fraction frac1(3, true, 1);  // +0.111

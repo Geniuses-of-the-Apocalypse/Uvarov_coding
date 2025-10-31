@@ -16,7 +16,7 @@ struct Pair {
 void Pair::init(double a, double b) {
     if (a == 0 && b <= 0) {
         cout << "Ошибка: ноль нельзя возводить в неположительную степень!" << endl;
-        cout << "Инициализация значениями по умолчанию (1, 1)" << endl;
+        cout << "Значения по умолчанию (1, 1)" << endl;
         first = 1;
         second = 1;
         return;
@@ -49,7 +49,7 @@ double Pair::power() {
 Pair make_Pair(double a, double b) {
     if (a == 0 && b <= 0) {
         cout << "Ошибка: 0 нельзя возводить в неположительную степень!" << endl;
-        cout << "Создание объекта с значениями по умолчанию (1, 1)" << endl;
+        cout << "Объекта с значениями по умолчанию (1, 1)" << endl;
         Pair p;
         p.init(1, 1);
         return p;

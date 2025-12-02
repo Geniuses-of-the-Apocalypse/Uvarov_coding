@@ -2,14 +2,14 @@
 #include <string>
 using namespace std;
 
-// Базовые функции преобразования значений (переименованы)
+// Базовые функции преобразования значений
 string jsonValue(int value) { return to_string(value); }
 string jsonValue(double value) { return to_string(value); }
 string jsonValue(bool value) { return value ? "true" : "false"; }
 string jsonValue(const string& value) { return "\"" + value + "\""; }
 string jsonValue(const char* value) { return "\"" + string(value) + "\""; }
 
-// Подход 1: Рекурсия
+// Рекурсия
 template<typename Arg>
 string toJsonRecursive(Arg&& arg) {
     return jsonValue(arg);
@@ -20,7 +20,7 @@ string toJsonRecursive(First&& first, Other&&... other) {
     return jsonValue(first) + "," + toJsonRecursive(other...);
 }
 
-// Подход 2: Fold Expressions
+// Fold Expressions
 template<typename... Args>
 string toJsonFold(Args&&... args) {
     string result = "[";

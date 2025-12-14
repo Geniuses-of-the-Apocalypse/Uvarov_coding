@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include <string>
 
 using namespace std;
 
@@ -9,14 +10,12 @@ private:
 
 public:
     // Конструкторы
-    vector3D(); // Конструктор без аргументов
-    vector3D(double a, double b, double c); // Конструктор инициализации
-    vector3D(const vector3D& other); // Конструктор копирования
+    vector3D() : x(0), y(0), z(0) {}
+    vector3D(double a, double b, double c) : x(a), y(b), z(c) {}
+    vector3D(const vector3D& other) : x(other.x), y(other.y), z(other.z) {}
     
-    // Методы
-    void read();
-    void display();
-    string toString();
+    // Метод toString для строкового представления
+    string toString() const;
     
     // Математические операции через перегрузку операторов
     vector3D operator+(const vector3D& other) const;
@@ -36,45 +35,34 @@ public:
     double length() const;
     
     // Геттеры
-    double getX() { return x; }
-    double getY() { return y; }
-    double getZ() { return z; }
+    double getX() const { return x; }
+    double getY() const { return y; }
+    double getZ() const { return z; }
+    
+    // Дружественные функции для ввода-вывода
+    friend ostream& operator<<(ostream& os, const vector3D& vec);
+    friend istream& operator>>(istream& is, vector3D& vec);
 };
 
-// Реализация конструкторов
-vector3D::vector3D() {
-    x = 0;
-    y = 0;
-    z = 0;
+// Перегрузка оператора вывода
+ostream& operator<<(ostream& os, const vector3D& vec) {
+    os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+    return os;
 }
 
-vector3D::vector3D(double a, double b, double c) {
-    x = a;
-    y = b;
-    z = c;
-}
-
-vector3D::vector3D(const vector3D& other) {
-    x = other.x;
-    y = other.y;
-    z = other.z;
+// Перегрузка оператора ввода
+istream& operator>>(istream& is, vector3D& vec) {
+    cout << "Введите координату x: ";
+    is >> vec.x;
+    cout << "Введите координату y: ";
+    is >> vec.y;
+    cout << "Введите координату z: ";
+    is >> vec.z;
+    return is;
 }
 
 // Реализация методов
-void vector3D::read() {
-    cout << "Введите координату x: ";
-    cin >> x;
-    cout << "Введите координату y: ";
-    cin >> y;
-    cout << "Введите координату z: ";
-    cin >> z;
-}
-
-void vector3D::display() {
-    cout << "(" << x << ", " << y << ", " << z << ")";
-}
-
-string vector3D::toString() {
+string vector3D::toString() const {
     return "(" + to_string(x) + ", " + to_string(y) + ", " + to_string(z) + ")";
 }
 
@@ -130,46 +118,32 @@ int main() {
     // Создание объектов
     cout << "Вводим вектор a:" << endl;
     vector3D a;
-    a.read();
+    cin >> a;
     
     cout << "\nВводим вектор b:" << endl;
     vector3D b;
-    b.read();
+    cin >> b;
     
-    vector3D c(b); // конструктор копирования
+    vector3D c(b);
     
-    cout << "\nВектор a = ";
-    a.display();
-    cout << endl;
-    
-    cout << "Вектор b = ";
-    b.display();
-    cout << endl;
-    
-    cout << "Вектор c (копия b) = ";
-    c.display();
-    cout << endl;
+    cout << "\nВектор a = " << a << endl;
+    cout << "Вектор b = " << b << endl;
+    cout << "Вектор c (копия b) = " << c << endl;
     
     // Демонстрация операций
     cout << "\n=== МАТЕМАТИЧЕСКИЕ ОПЕРАЦИИ ===" << endl;
     
     vector3D sum = a + b;
-    cout << "a + b = ";
-    sum.display();
-    cout << endl;
+    cout << "a + b = " << sum << endl;
     
     vector3D diff = a - b;
-    cout << "a - b = ";
-    diff.display();
-    cout << endl;
+    cout << "a - b = " << diff << endl;
     
     double dot = a * b;
     cout << "a * b (скалярное произведение) = " << dot << endl;
     
     vector3D scaled = a * 2;
-    cout << "a * 2 = ";
-    scaled.display();
-    cout << endl;
+    cout << "a * 2 = " << scaled << endl;
     
     cout << "\nДлина a = " << a.length() << endl;
     cout << "Длина b = " << b.length() << endl;
@@ -186,14 +160,12 @@ int main() {
     vector3D arr[2];
     for (int i = 0; i < 2; i++) {
         cout << "\nВектор arr[" << i << "]:" << endl;
-        arr[i].read();
+        cin >> arr[i];
     }
     
     cout << "\nСтатический массив:" << endl;
     for (int i = 0; i < 2; i++) {
-        cout << "arr[" << i << "] = ";
-        arr[i].display();
-        cout << endl;
+        cout << "arr[" << i << "] = " << arr[i] << endl;
     }
     
     // Динамический массив
@@ -204,14 +176,12 @@ int main() {
     vector3D* dynArr = new vector3D[n];
     for (int i = 0; i < n; i++) {
         cout << "\nВектор dynArr[" << i << "]:" << endl;
-        dynArr[i].read();
+        cin >> dynArr[i];
     }
     
     cout << "\nДинамический массив:" << endl;
     for (int i = 0; i < n; i++) {
-        cout << "dynArr[" << i << "] = ";
-        dynArr[i].display();
-        cout << endl;
+        cout << "dynArr[" << i << "] = " << dynArr[i] << endl;
     }
     delete[] dynArr;
     

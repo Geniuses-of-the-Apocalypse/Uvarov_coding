@@ -9,9 +9,9 @@ private:
 
 public:
     // Конструкторы
-    vector3D(); // Конструктор без аргументов
-    vector3D(double x_val, double y_val, double z_val); // Конструктор инициализации
-    vector3D(const vector3D& other); // Конструктор копирования
+    vector3D() : x(0), y(0), z(0) {} // Конструктор без аргументов
+    vector3D(double x_val, double y_val, double z_val) : x(x_val), y(y_val), z(z_val) {} // Конструктор инициализации
+    vector3D(const vector3D& other) : x(other.x), y(other.y), z(other.z) {} // Конструктор копирования
     
     // Методы
     void read();
@@ -32,25 +32,6 @@ public:
     double getY() { return y; }
     double getZ() { return z; }
 };
-
-// Реализация конструкторов
-vector3D::vector3D() {
-    x = 0;
-    y = 0;
-    z = 0;
-}
-
-vector3D::vector3D(double x_val, double y_val, double z_val) {
-    x = x_val;
-    y = y_val;
-    z = z_val;
-}
-
-vector3D::vector3D(const vector3D& other) {
-    x = other.x;
-    y = other.y;
-    z = other.z;
-}
 
 // Реализация методов
 void vector3D::read() {

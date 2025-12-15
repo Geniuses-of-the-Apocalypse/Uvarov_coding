@@ -13,18 +13,14 @@ protected:
     double second;
 public:
     // Конструктор без параметров
-    Pair() {
-        first = 0;
-        second = 0;
-    }
+    Pair() : first(0.0), second(0.0) {}
+    
     // Конструктор с параметрами
-    Pair(double f, double s) {
+    Pair(double f, double s) : first(f), second(s) {
         if (f < 0 || s < 0) {
             cout << "Ошибка: значения не могут быть отрицательными!" << endl;
             exit(1);
         }
-        first = f;
-        second = s;
     }
     // Методы установки
     void setFirst(double f) {
@@ -74,18 +70,13 @@ private:
     double fPart;
 public:
     // Конструктор без параметров
-    Fraction() : Pair() {
-        iPart = 0;
-        fPart = 0.0;
-    }
+    Fraction() : Pair(), iPart(0), fPart(0.0) {}
     // Конструктор с параметрами
-    Fraction(int i, double f) : Pair(i, f) {
+    Fraction(int i, double f) : Pair(i, f), iPart(i), fPart(f) {
         if (i < 0 || f < 0) {
             cout << "Ошибка: значения не могут быть отрицательными!" << endl;
             exit(1);
         }
-        iPart = i;
-        fPart = f;
     }
     // Методы установки
     void setIPart(int i) {

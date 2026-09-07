@@ -23,6 +23,14 @@ def compute_revenue(rows: list[dict]) -> float:
 def top_item(rows: list[dict]) -> dict | None:
     return max(rows, key=_row_revenue, default=None)
 
+
+
+
+
+
+
+
+
 # Проверка
 # with open("file.csv", newline="") as file:
 #     data = file.read()

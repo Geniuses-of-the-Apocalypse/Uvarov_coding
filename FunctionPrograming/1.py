@@ -1,47 +1,41 @@
 import csv
-
-# Ключи словаря
-KEY_QUANTITY = "quantity"
-KEY_PRICE = "price"
+from typing import Optional
 
 
-def _row_revenue(row: dict) -> float:
-    return int(row[KEY_QUANTITY]) * float(row[KEY_PRICE])
-
-
-# Уровень 1: CSV → список словарей
 def parse_csv(data: str) -> list[dict]:
     return list(csv.DictReader(data.splitlines()))
 
 
-# Уровень 2: общая выручка
 def compute_revenue(rows: list[dict]) -> float:
-    return sum(_row_revenue(row) for row in rows)
+    return sum(map(lambda x: int(x["quantity"]) * float(x["price"]), rows))
 
 
-# Уровень 3: товар с максимальной выручкой
-def top_item(rows: list[dict]) -> dict | None:
-    return max(rows, key=_row_revenue, default=None)
+def top_item(rows: list[dict]) -> Optional[dict]:
+    if not rows:
+        return None
+
+    try:
+        return max(
+            rows,
+            key=lambda x: int(x["quantity"]) * float(x["price"])
+        )
+    except (ValueError, TypeError, KeyError):
+        return None
 
 
+data = """date,item,quantity,price
+2026-09-01,Notebook,12,4.5
+2026-09-02,Pen,25,1.2
+2026-09-03,Backpack,3,35.0
+2026-09-04,Marker,10,2.8
+2026-09-05,Folder,8,3.5"""
 
+rows = parse_csv(data)
 
+print("Данные:")
+print(rows)
 
+print("\nОбщая выручка:", compute_revenue(rows))
 
-
-
-
-# Проверка
-# with open("file.csv", newline="") as file:
-#     data = file.read()
-# 
-# rows = parse_csv(data)
-# 
-# print("Данные:")
-# print(rows)
-# 
-# print("\nОбщая выручка:", compute_revenue(rows))
-# 
-# print("\nТовар с максимальной выручкой:")
-# print(top_item(rows))
-
+print("\nТовар с максимальной выручкой:")
+print(top_item(rows))

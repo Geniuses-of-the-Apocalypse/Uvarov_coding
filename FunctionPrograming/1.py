@@ -10,12 +10,8 @@ def compute_revenue(rows: list[dict]) -> float:
     return sum(map(lambda x: float(x["quantity"]) * float(x["price"]), rows))
 
 
-def top_item(rows: list[dict]) -> Optional[dict]:
-    return max(
-        rows,
-        key=lambda x: float(x["quantity"]) * float(x["price"])
-    )
-
+def top_item(rows):
+    return sorted(rows, key=lambda x: float(x['quantity']) * float(x['price']), reverse=True)[0]
 
 data = """date,item,quantity,price
 2026-09-01,Notebook,12.0,4.5
@@ -30,6 +26,10 @@ print("Данные:")
 print(rows)
 
 print("\nОбщая выручка:", compute_revenue(rows))
+
+# topp_item = top_item(rows)
+# max_rev = float(topp_item['quantity']) * float(topp_item['price'])
+# print(f"Максимальная выручка: {max_revenue}")
 
 print("\nТовар с максимальной выручкой:")
 print(top_item(rows))

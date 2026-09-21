@@ -1,0 +1,41 @@
+import re
+from collections import Counter
+from typing import Optional
+
+
+def split_words(text: str) -> list[str]:
+    return re.findall(r"[a-zA-Zа-яА-ЯёЁ0-9]+", text.lower())
+
+
+def count_word_frequencies(words: list[str]) -> dict[str, int]:
+    return dict(Counter(words))
+
+
+def top_word(freq: dict[str, int]) -> Optional[str]:
+    return max(freq, key=freq.get) if freq else None
+
+
+if __name__ == "__main__":
+    text = (
+        "В начале июля, в чрезвычайно жаркое время, под вечер, один молодой "
+        "человек вышел из своей каморки, которую нанимал от жильцов в "
+        "переулке, на улицу и медленно, как бы в нерешимости, отправился к "
+        "мосту. Он благополучно избегнул встречи с своею хозяйкой на "
+        "лестнице. Каморка его приходилась под самою кровлей высокого "
+        "пятиэтажного дома и походила более на шкаф, чем на квартиру."
+    )
+
+    print("1) split_words:")
+    print(split_words(text))
+    print()
+
+    print("2) count_word_frequencies:")
+    print(count_word_frequencies(split_words(text)))
+    print()
+
+    print("3) top_word:")
+    print(top_word(count_word_frequencies(split_words(text))))
+    print()
+
+    print("4) пустая строка:")
+    print(top_word({}))

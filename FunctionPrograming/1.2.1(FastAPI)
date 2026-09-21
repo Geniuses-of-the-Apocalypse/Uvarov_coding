@@ -1,7 +1,7 @@
 import re
 from collections import Counter
 from typing import Optional
-
+# Кто стырит тот лох
 
 def split_words(text: str) -> list[str]:
     return re.findall(r"[a-zA-Zа-яА-ЯёЁ0-9]+", text.lower())

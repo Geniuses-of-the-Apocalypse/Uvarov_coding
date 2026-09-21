@@ -42,11 +42,6 @@ def get_rows(payload: CSVRequest) -> list[dict]:
     return rows
 
 
-@app.get("/")
-def root():
-    return {"message": "Открой /docs для тестирования API"}
-
-
 @app.post("/parse")
 def parse_endpoint(payload: CSVRequest):
     rows = parse_csv(payload.data)

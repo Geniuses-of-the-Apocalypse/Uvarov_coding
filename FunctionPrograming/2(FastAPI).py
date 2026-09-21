@@ -1,7 +1,7 @@
 import csv
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 
 app = FastAPI(title="CSV Revenue API")
@@ -35,6 +35,18 @@ class CSVRequest(BaseModel):
     data: str
 
 
+def get_rows(payload: CSVRequest) -> list[dict]:
+    rows = parse_csv(payload.data)
+    if not rows:
+        raise HTTPException(status_code=400, detail="CSV пустой или не распарсился")
+    return rows
+
+
+@app.get("/")
+def root():
+    return {"message": "Открой /docs для тестирования API"}
+
+
 @app.post("/parse")
 def parse_endpoint(payload: CSVRequest):
     rows = parse_csv(payload.data)
@@ -42,26 +54,17 @@ def parse_endpoint(payload: CSVRequest):
 
 
 @app.post("/revenue")
-def revenue_endpoint(payload: CSVRequest):
-    rows = parse_csv(payload.data)
-    if not rows:
-        raise HTTPException(status_code=400, detail="CSV пустой или не распарсился")
+def revenue_endpoint(rows: list[dict] = Depends(get_rows)):
     return {"revenue": compute_revenue(rows)}
 
 
 @app.post("/top-item")
-def top_item_endpoint(payload: CSVRequest):
-    rows = parse_csv(payload.data)
-    if not rows:
-        raise HTTPException(status_code=400, detail="CSV пустой или не распарсился")
+def top_item_endpoint(rows: list[dict] = Depends(get_rows)):
     return {"top_item": top_item(rows)}
 
 
 @app.post("/report")
-def report_endpoint(payload: CSVRequest):
-    rows = parse_csv(payload.data)
-    if not rows:
-        raise HTTPException(status_code=400, detail="CSV пустой или не распарсился")
+def report_endpoint(rows: list[dict] = Depends(get_rows)):
     return {
         "rows": rows,
         "revenue": compute_revenue(rows),

@@ -15,7 +15,7 @@ def top_word(freq: dict[str, int]) -> Optional[str]:
 
 
 if __name__ == "__main__":
-    text = (
+    TEXT = (
         "В начале июля, в чрезвычайно жаркое время, под вечер, один молодой "
         "человек вышел из своей каморки, которую нанимал от жильцов в "
         "переулке, на улицу и медленно, как бы в нерешимости, отправился к "
@@ -25,15 +25,15 @@ if __name__ == "__main__":
     )
 
     print("1) split_words:")
-    print(split_words(text))
+    print(split_words(TEXT))
     print()
 
     print("2) count_word_frequencies:")
-    print(count_word_frequencies(split_words(text)))
+    print(count_word_frequencies(split_words(TEXT)))
     print()
 
     print("3) top_word:")
-    print(top_word(count_word_frequencies(split_words(text))))
+    print(top_word(count_word_frequencies(split_words(TEXT))))
     print()
 
     print("4) пустая строка:")

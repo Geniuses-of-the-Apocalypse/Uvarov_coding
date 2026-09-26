@@ -34,8 +34,8 @@ Result = Union[Success[T], Failure[E]]
 
 def load_users() -> Result[list[User], str]:
     users = [
-        User("Alice", 30, "alice@example.com"),
-        User("Bob", 25, "bob@example.com"),
+        User("Vova", 30, "vova@mail.ru"),
+        User("Gleb", 25, "gleb@mail.ru"),
     ]
     if not users:
         return Failure("Список пользователей пуст")

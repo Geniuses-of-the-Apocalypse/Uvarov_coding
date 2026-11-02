@@ -28,4 +28,4 @@ greater_than = lambda threshold: lambda x: x > threshold
 numbers = [1, 5, 12, 3, 20, 8, 15, 2]
 
 print(list(filter(greater_than(10), numbers)))
-print(list(filtergreater_than(5), numbers)))
+print(list(filter(greater_than(5), numbers)))

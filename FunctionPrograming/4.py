@@ -3,18 +3,18 @@ from types import MappingProxyType
 from functools import partial
 
 # ---------- Уровень 1 ----------
-filter_by = lambda key: lambda value: lambda items: tuple(
+FILTER_BY = lambda key: lambda value: lambda items: tuple(
     item for item in items if item.get(key) == value
 )
 
-print(filter_by("category")("electronics")
+print(FILTER_BY("category")("electronics")
     ([{"name": "Ноутбук",  "category": "electronics", "price": 1000},
     {"name": "Футболка", "category": "clothes",     "price": 50},
     {"name": "Телефон",  "category": "electronics", "price": 800},
     {"name": "Джинсы",   "category": "clothes",     "price": 100}]))
 
 # ---------- Уровень 2 ----------
-FILTER_BY_CATEGORY = partial(filter_by, "category")
+FILTER_BY_CATEGORY = partial(FILTER_BY, "category")
 FILTER_CLOTHES = FILTER_BY_CATEGORY("clothes")
 
 print(FILTER_CLOTHES(

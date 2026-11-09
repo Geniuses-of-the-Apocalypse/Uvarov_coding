@@ -1,5 +1,4 @@
 #36264c19b305aebcca4f8dce6c6143321ff60a5e57a55f83a943be72f4d048f8
-from types import MappingProxyType
 from functools import partial
 
 # ---------- Уровень 1 ----------

@@ -9,13 +9,15 @@ STUDENTS = tuple(
 )
 
 # Уровень 1: map
-formatted_students = list(map(lambda s: f"Имя: {s['name']}, Оценка: {s['grade']}", Students))
+formatted_students = tuple(map(lambda s: f"Имя: {s['name']}, Оценка: {s['grade']}", STUDENTS))
+print(formatted_students)
 
 # Уровень 2: filter
-filtered_students = list(filter(lambda s: s['grade'] > 4.0, Students))
+filtered_students = tuple(filter(lambda s: s['grade'] > 4.0, STUDENTS))
+print(filtered_students)
 
-# Уровень 3: Reduce
-
-ages_mapped = list(map(lambda s: s['age'], filtered_students))
-total_age_reduce = reduce(lambda acc, age: acc + age, ages_mapped, 0)
-average_age_func = total_age_reduce / len(ages_mapped) if ages_mapped else 0
+# Уровень 3: reduce
+ages = tuple(map(lambda s: s['age'], filtered_students))
+total_age = reduce(lambda acc, age: acc + age, ages, 0)
+average_age = total_age / len(ages) if ages else 0
+print(average_age)

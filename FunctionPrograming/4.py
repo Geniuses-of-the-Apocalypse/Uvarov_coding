@@ -1,29 +1,29 @@
+from types import MappingProxyType
 from functools import partial
 
 # ---------- Уровень 1 ----------
-filter_by = lambda key: lambda value: lambda items: [
+filter_by = lambda key: lambda value: lambda items: tuple(
     item for item in items if item.get(key) == value
-]
+)
 
-products = [
-    {"name": "Ноутбук",  "category": "electronics", "price": 1000},
+print(filter_by("category")("electronics")
+    ([{"name": "Ноутбук",  "category": "electronics", "price": 1000},
     {"name": "Футболка", "category": "clothes",     "price": 50},
     {"name": "Телефон",  "category": "electronics", "price": 800},
-    {"name": "Джинсы",   "category": "clothes",     "price": 100},
-]
-
-print(filter_by("category")("electronics")(products))
-
+    {"name": "Джинсы",   "category": "clothes",     "price": 100}]))
 
 # ---------- Уровень 2 ----------
-filter_by_category = partial(filter_by, "category")
+FILTER_BY_CATEGORY = partial(filter_by, "category")
+FILTER_CLOTHES = FILTER_BY_CATEGORY("clothes")
 
-filter_clothes = filter_by_category("clothes")
-print(filter_clothes(products))
-
+print(FILTER_CLOTHES(
+    [{"name": "Ноутбук",  "category": "electronics", "price": 1000},
+    {"name": "Футболка", "category": "clothes",     "price": 50},
+    {"name": "Телефон",  "category": "electronics", "price": 800},
+    {"name": "Джинсы",   "category": "clothes",     "price": 100}]))
 
 # ---------- Уровень 3 ----------
-greater_than = lambda threshold: lambda x: x > threshold
+GREATER_THAN = lambda threshold: lambda x: x > threshold
 
-print(list(filter(greater_than(10), [1, 5, 12, 3, 20, 8, 15, 2])))
-print(list(filter(greater_than(5), [1, 5, 12, 3, 20, 8, 15, 2])))
+print(tuple(filter(GREATER_THAN(10), [1, 5, 12, 3, 20, 8, 15, 2])))
+print(tuple(filter(GREATER_THAN(5), [1, 5, 12, 3, 20, 8, 15, 2])))

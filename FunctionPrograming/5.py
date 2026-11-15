@@ -17,6 +17,5 @@ FILTERED_STUDENTS = tuple(filter(lambda s: s['grade'] > 4.0, STUDENTS))
 print(FILTERED_STUDENTS)
 
 # Уровень 3: reduce
-TOTAL_AGE = reduce(lambda acc, s: acc + s['age'], FILTERED_STUDENTS, 0)
-AVERAGE_AGE = TOTAL_AGE / len(FILTERED_STUDENTS) if FILTERED_STUDENTS else 0
-print(AVERAGE_AGE)
+TOTAL_AGE, COUNT = reduce(lambda acc, student: (acc[0] + student["age"], acc[1] + 1), FILTERED_STUDENTS, (0, 0))
+print(TOTAL_AGE / COUNT)
